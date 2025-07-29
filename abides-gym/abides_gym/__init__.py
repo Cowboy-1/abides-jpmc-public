@@ -1,4 +1,4 @@
-from gym.envs.registration import register
+from gymnasium.envs.registration import register
 from ray.tune.registry import register_env
 
 from .envs import *
