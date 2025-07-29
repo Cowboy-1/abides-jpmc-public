@@ -3,7 +3,7 @@ from dataclasses import asdict, dataclass, field
 from typing import Any, Dict, List
 from abc import ABC
 
-import gym
+import gymnasium as gym
 import numpy as np
 
 import abides_markets.agents.utils as markets_agent_utils
