@@ -1,5 +1,5 @@
 gymnasium>=0.29.1 
-ray[rllib]==2.9.0
+ray[rllib]==2.10.0
 pomegranate==1.0.0
 numpy==1.22.0 
 pandas==1.2.4
