@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 
 import gymnasium as gym
 import numpy as np
-from gym.utils import seeding
+from gymnasium.utils import seeding
 
 import abides_markets.agents.utils as markets_agent_utils
 from abides_core import Kernel, NanosecondTime
