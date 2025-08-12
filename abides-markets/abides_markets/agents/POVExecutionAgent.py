@@ -2,7 +2,7 @@
 import sys
 import warnings
 import pandas as pd
-from abides_core.agents import TradingAgent  # Corrected import path
+from abides_core.agents.trading_agent import TradingAgent  # Corrected import path
 from util.util import log_print
 POVExecutionWarning_msg = "Running a configuration using POVExecutionAgent requires an ExchangeAgent with " \
     "attribute `stream_history` set to a large value, recommended at sys.maxsize."
