@@ -188,12 +188,22 @@ class SubGymMarketsDailyInvestorEnv_v0(AbidesGymMarketsEnv):
             dtype=np.float32,
         ).reshape(self.num_state_features, 1)
 
-        self.observation_space: gym.Space = gym.spaces.Box(
-            self.state_lows,
-            self.state_highs,
-            shape=(self.num_state_features, 1),
-            dtype=np.float32,
-        )
+        if self.flatten_history:
+            dummy = np.zeros((self.num_state_features, 1), dtype=np.float64)
+            obs_len = self._to_observation(dummy).shape[0]
+            self.observation_space = gym.spaces.Box(
+                low=-np.inf,
+                high=np.inf,
+                shape=(obs_len,),
+                dtype=np.float64,
+            )
+        else:
+            self.observation_space = gym.spaces.Box(
+                self.state_lows,
+                self.state_highs,
+                shape=(self.num_state_features, 1),
+                dtype=np.float32,
+            )
 
         # instantiate previous_marked_to_market as starting_cash
         self.previous_marked_to_market = self.starting_cash

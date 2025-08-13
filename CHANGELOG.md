@@ -5,7 +5,7 @@ Unreleased
 
 - Dropped TensorFlow deps/warnings.
 - Migrated to Gymnasium 0.29 API (reset w/ seed, 5-tuple step).
-- Standardized on Ray 2.10.0, Torch ≥2.1, Python ≥3.10.
+- Standardized on Ray 2.10.0, Torch ≥2.1, Python ≥3.10, and unified NumPy/Pandas pins.
 - Added non-recurrent history flattening for DQN compatibility (LSTM disabled by default).
 - Exported POVExecutionAgent from abides_markets.agents.
 
