@@ -45,6 +45,7 @@ class AbidesGymMarketsEnv(AbidesGymCoreEnv, ABC):
         *,
         flatten_history: bool = True,
     ) -> None:
+        self.flatten_history = flatten_history
         super().__init__(
             background_config_pair,
             wakeup_interval_generator,
