@@ -11,6 +11,8 @@ if __name__ == "__main__":
         background_config="rmsc04",
     )
 
-    state, info = env.reset(seed=0)
+    obs, info = env.reset(seed=0)
     for i in tqdm(range(5)):
-        state, reward, done, info = env.step(0)
+        obs, reward, terminated, truncated, info = env.step(0)
+        if terminated or truncated:
+            break

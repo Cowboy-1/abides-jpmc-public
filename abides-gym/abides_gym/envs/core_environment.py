@@ -24,7 +24,10 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         state_buffer_length: int,
         first_interval: Optional[NanosecondTime] = None,
         gymAgentConstructor=None,
+        *,
+        flatten_history: bool = True,
     ) -> None:
+        self.flatten_history = flatten_history
 
         self.background_config_pair: Tuple[
             Callable, Optional[Dict[str, Any]]
@@ -83,6 +86,9 @@ class AbidesGymCoreEnv(gym.Env, ABC):
 
         super().reset(seed=seed, options=options)
 
+        if seed is not None:
+            self.seed(seed)
+
         # get seed to initialize random states for ABIDES
         seed = self.np_random.integers(low=0, high=2 ** 32, dtype="uint64")
         # instanciate back ground config state
@@ -133,7 +139,9 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         self.info = info
         return state, info
 
-    def step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
+    def step(
+        self, action: int
+    ) -> Tuple[np.ndarray, float, bool, bool, Dict[str, Any]]:
         """
         The agent takes a step in the environment.
 
@@ -143,7 +151,7 @@ class AbidesGymCoreEnv(gym.Env, ABC):
 
         Returns
         -------
-        observation, reward, done, info : tuple
+        observation, reward, terminated, truncated, info : tuple
             observation (object) :
                 an environment-specific object representing your observation of
                 the environment.
@@ -153,18 +161,19 @@ class AbidesGymCoreEnv(gym.Env, ABC):
                 varies between environments, but the goal is always to increase
                 your total reward.
 
-            done (bool) :
-                whether it's time to reset the environment again. Most (but not
-                all) tasks are divided up into well-defined episodes, and done
-                being True indicates the episode has terminated. (For example,
-                perhaps the pole tipped too far, or you lost your last life.)
+            terminated (bool) :
+                whether a terminal state (as defined under the MDP of the task)
+                is reached, which ends the episode.
+
+            truncated (bool) :
+                whether a truncation condition outside the MDP is satisfied.
 
             info (dict) :
-                 diagnostic information useful for debugging. It can sometimes
-                 be useful for learning (for example, it might contain the raw
-                 probabilities behind the environment's last state change).
-                 However, official evaluations of your agent are not allowed to
-                 use this for learning.
+                diagnostic information useful for debugging. It can sometimes
+                be useful for learning (for example, it might contain the raw
+                probabilities behind the environment's last state change).
+                However, official evaluations of your agent are not allowed to
+                use this for learning.
         """
         assert self.action_space.contains(
             action
@@ -193,7 +202,10 @@ class AbidesGymCoreEnv(gym.Env, ABC):
 
         self.info = self.raw_state_to_info(deepcopy(raw_state["result"]))
 
-        return (self.state, self.reward, self.done, self.info)
+        terminated = self.done
+        truncated = False
+
+        return (self.state, self.reward, terminated, truncated, self.info)
 
     def render(self, mode: str = "human") -> None:
         """Renders the environment.

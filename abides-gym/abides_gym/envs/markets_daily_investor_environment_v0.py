@@ -63,7 +63,9 @@ class SubGymMarketsDailyInvestorEnv_v0(AbidesGymMarketsEnv):
         reward_mode: str = "dense",
         done_ratio: float = 0.3,
         debug_mode: bool = False,
-        background_config_extra_kvargs={},
+        background_config_extra_kvargs: Dict[str, Any] = {},
+        *,
+        flatten_history: bool = True,
     ) -> None:
         self.background_config: Any = importlib.import_module(
             "abides_markets.configs.{}".format(background_config), package=None
@@ -78,6 +80,7 @@ class SubGymMarketsDailyInvestorEnv_v0(AbidesGymMarketsEnv):
         self.reward_mode: str = reward_mode
         self.done_ratio: float = done_ratio
         self.debug_mode: bool = debug_mode
+        self.flatten_history: bool = flatten_history
 
         # marked_to_market limit to STOP the episode
         self.down_done_condition: float = self.done_ratio * starting_cash
@@ -147,6 +150,7 @@ class SubGymMarketsDailyInvestorEnv_v0(AbidesGymMarketsEnv):
             state_buffer_length=self.state_history_length,
             market_data_buffer_length=self.market_data_buffer_length,
             first_interval=self.first_interval,
+            flatten_history=flatten_history,
         )
 
         # Action Space

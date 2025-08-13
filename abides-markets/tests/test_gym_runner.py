@@ -14,7 +14,7 @@ def test_gym_runner_markets_execution():
 
     state, info = env.reset(seed=0)
     for i in range(5):
-        state, reward, done, info = env.step(0)
+        state, reward, terminated, truncated, info = env.step(0)
     env.step(1)
     env.step(2)
     state, info = env.reset()
@@ -30,7 +30,7 @@ def test_gym_runner_markets_daily_investor():
 
     state, info = env.reset(seed=0)
     for i in range(5):
-        state, reward, done, info = env.step(0)
+        state, reward, terminated, truncated, info = env.step(0)
     env.step(1)
     env.step(2)
     state, info = env.reset()

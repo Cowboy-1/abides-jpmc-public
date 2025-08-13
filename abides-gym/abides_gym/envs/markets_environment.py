@@ -42,6 +42,8 @@ class AbidesGymMarketsEnv(AbidesGymCoreEnv, ABC):
         market_data_buffer_length: int,
         first_interval: Optional[NanosecondTime] = None,
         raw_state_pre_process=markets_agent_utils.identity_decorator,
+        *,
+        flatten_history: bool = True,
     ) -> None:
         super().__init__(
             background_config_pair,
@@ -49,6 +51,7 @@ class AbidesGymMarketsEnv(AbidesGymCoreEnv, ABC):
             state_buffer_length,
             first_interval=first_interval,
             gymAgentConstructor=FinancialGymAgent,
+            flatten_history=flatten_history,
         )
         self.starting_cash: int = starting_cash
         self.market_data_buffer_length: int = market_data_buffer_length
