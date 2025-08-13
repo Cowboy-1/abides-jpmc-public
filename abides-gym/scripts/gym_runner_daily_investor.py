@@ -11,7 +11,6 @@ if __name__ == "__main__":
         background_config="rmsc04",
     )
 
-    env.seed(0)
-    state = env.reset()
+    state, info = env.reset(seed=0)
     for i in tqdm(range(5)):
         state, reward, done, info = env.step(0)

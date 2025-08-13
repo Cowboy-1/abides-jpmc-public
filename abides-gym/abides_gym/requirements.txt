@@ -1,9 +1,11 @@
 gymnasium>=0.29.1 
 ray[rllib]==2.10.0
 pomegranate==1.0.0
-numpy==1.22.0 
+numpy==1.22.0
 pandas==1.2.4
-psutil==5.8.0 
-scipy==1.10.0 
-tqdm==4.61.1 
+psutil==5.8.0
+scipy==1.10.0
+tqdm==4.61.1
 coloredlogs==15.0.1
+torch>=2.1
+
