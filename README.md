@@ -39,6 +39,8 @@ The project is currently broken down into 3 parts: ABIDES-Core, ABIDES-Markets a
 * ABIDES-Markets: Extension of ABIDES-Core to financial markets. Contains implementation of an exchange mimicking NASDAQ, stylised trading agents and configurations.
 * ABIDES-Gym: Extra layer to wrap the simulator into an OpenAI Gym environment for reinforcement learning use. 2 ready to use trading environments available. Possibility to build other financial markets environments easily.
 
+**Note:** As of this release ABIDES targets Python ≥3.10 and depends on Gymnasium ≥0.29.1, Ray 2.10.0 and Torch ≥2.1. TensorFlow is no longer required.
+
 <p align="right">(<a href="#top">back to top</a>)</p>
 
 <!-- CITING -->
@@ -140,10 +142,7 @@ env = gym.make(
 )
 
 obs, info = env.reset(seed=0)
-for i in range(5):
-    obs, reward, terminated, truncated, info = env.step(0)
-    if terminated or truncated:
-        break
+obs, reward, terminated, truncated, info = env.step(0)
 ```
 
 ## Default Available Markets Configurations
