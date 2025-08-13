@@ -104,6 +104,7 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
         too_much_reward_update: int = -100,
         just_quantity_reward_update: int = 0,
         debug_mode: bool = False,
+        flatten_history: bool = True,
         background_config_extra_kvargs: Dict[str, Any] = {},
     ) -> None:
         self.background_config: Any = importlib.import_module(
@@ -120,6 +121,7 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
         self.execution_window: str = str_to_ns(execution_window)
         self.direction: str = direction
         self.debug_mode: bool = debug_mode
+        self.flatten_history: bool = flatten_history
 
         self.too_much_reward_update: int = too_much_reward_update
         self.not_enough_reward_update: int = not_enough_reward_update
@@ -269,12 +271,22 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
             dtype=np.float32,
         ).reshape(self.num_state_features, 1)
 
-        self.observation_space: gym.Space = gym.spaces.Box(
-            self.state_lows,
-            self.state_highs,
-            shape=(self.num_state_features, 1),
-            dtype=np.float32,
-        )
+        if self.flatten_history:
+            dummy = np.zeros((self.num_state_features, 1), dtype=np.float64)
+            obs_len = self._to_observation(dummy).shape[0]
+            self.observation_space = gym.spaces.Box(
+                low=-np.inf,
+                high=np.inf,
+                shape=(obs_len,),
+                dtype=np.float64,
+            )
+        else:
+            self.observation_space = gym.spaces.Box(
+                self.state_lows,
+                self.state_highs,
+                shape=(self.num_state_features, 1),
+                dtype=np.float32,
+            )
         # initialize previous_marked_to_market to starting_cash (No holding at the beginning of the episode)
         self.previous_marked_to_market: int = self.starting_cash
 
