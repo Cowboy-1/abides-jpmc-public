@@ -104,8 +104,9 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
         too_much_reward_update: int = -100,
         just_quantity_reward_update: int = 0,
         debug_mode: bool = False,
-        flatten_history: bool = True,
         background_config_extra_kvargs: Dict[str, Any] = {},
+        *,
+        flatten_history: bool = True,
     ) -> None:
         self.background_config: Any = importlib.import_module(
             "abides_markets.configs.{}".format(background_config), package=None
@@ -118,7 +119,7 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
         self.market_data_buffer_length: int = market_data_buffer_length
         self.first_interval: NanosecondTime = str_to_ns(first_interval)
         self.parent_order_size: int = parent_order_size
-        self.execution_window: str = str_to_ns(execution_window)
+        self.execution_window: NanosecondTime = str_to_ns(execution_window)
         self.direction: str = direction
         self.debug_mode: bool = debug_mode
         self.flatten_history: bool = flatten_history
@@ -215,6 +216,7 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
             state_buffer_length=self.state_history_length,
             market_data_buffer_length=self.market_data_buffer_length,
             first_interval=self.first_interval,
+            flatten_history=flatten_history,
         )
 
         # Action Space

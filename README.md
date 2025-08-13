@@ -131,7 +131,7 @@ in the config file.
 ABIDES can also be run through a Gym interface using ABIDES-Gym environments.
 
 ```python
-import gym
+import gymnasium as gym
 import abides_gym
 
 env = gym.make(
@@ -139,10 +139,11 @@ env = gym.make(
     background_config="rmsc04",
 )
 
-env.seed(0)
-initial_state = env.reset()
+obs, info = env.reset(seed=0)
 for i in range(5):
-    state, reward, done, info = env.step(0)
+    obs, reward, terminated, truncated, info = env.step(0)
+    if terminated or truncated:
+        break
 ```
 
 ## Default Available Markets Configurations
