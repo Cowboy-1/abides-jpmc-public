@@ -39,14 +39,40 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         self.state_buffer_length: int = state_buffer_length
         self.gymAgentConstructor = gymAgentConstructor
 
-        self.seed()  # fix random seed if no seed specified
+        self._np_random: Optional[np.random.Generator] = None
 
         self.state: Optional[np.ndarray] = None
         self.reward: Optional[float] = None
         self.done: Optional[bool] = None
         self.info: Optional[Dict[str, Any]] = None
 
-    def reset(self):
+    @property
+    def np_random(self) -> np.random.Generator:
+        if self._np_random is None:
+            self.seed()
+        return self._np_random
+
+    @np_random.setter
+    def np_random(self, value: np.random.Generator) -> None:
+        self._np_random = value
+
+    def seed(self, seed: Optional[int] = None) -> List[Any]:
+        self._np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+    def _to_observation(self, raw_state: np.ndarray) -> np.ndarray:
+        if getattr(self, "flatten_history", False):
+            obs = np.asarray(raw_state, dtype=np.float64).reshape(-1)
+        else:
+            obs = np.asarray(raw_state, dtype=np.float32)
+        return obs
+
+    def reset(
+        self,
+        *,
+        seed: Optional[int] = None,
+        options: Optional[Dict[str, Any]] = None,
+    ) -> Tuple[np.ndarray, Dict[str, Any]]:
         """
         Reset the state of the environment and returns an initial observation.
 
@@ -55,8 +81,10 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         observation (object): the initial observation of the space.
         """
 
+        super().reset(seed=seed, options=options)
+
         # get seed to initialize random states for ABIDES
-        seed = self.np_random.randint(low=0, high=2 ** 32, dtype="uint64")
+        seed = self.np_random.integers(low=0, high=2 ** 32, dtype="uint64")
         # instanciate back ground config state
         background_config_args = self.background_config_pair[1]
         background_config_args.update(
@@ -96,10 +124,14 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         kernel.initialize()
         # kernel will run until GymAgent has to take an action
         raw_state = kernel.runner()
-        state = self.raw_state_to_state(deepcopy(raw_state["result"]))
+        state = self._to_observation(
+            self.raw_state_to_state(deepcopy(raw_state["result"]))
+        )
         # attach kernel
         self.kernel = kernel
-        return state
+        info: Dict[str, Any] = {}
+        self.info = info
+        return state, info
 
     def step(self, action: int) -> Tuple[np.ndarray, float, bool, Dict[str, Any]]:
         """
@@ -141,7 +173,9 @@ class AbidesGymCoreEnv(gym.Env, ABC):
         abides_action = self._map_action_space_to_ABIDES_SIMULATOR_SPACE(action)
 
         raw_state = self.kernel.runner((self.gym_agent, abides_action))
-        self.state = self.raw_state_to_state(deepcopy(raw_state["result"]))
+        self.state = self._to_observation(
+            self.raw_state_to_state(deepcopy(raw_state["result"]))
+        )
 
         assert self.observation_space.contains(
             self.state
@@ -186,24 +220,6 @@ class AbidesGymCoreEnv(gym.Env, ABC):
             mode (str): the mode to render with
         """
         print(self.state, self.reward, self.info)
-
-    def seed(self, seed: Optional[int] = None) -> List[Any]:
-        """Sets the seed for this env's random number generator(s).
-
-        Note:
-            Some environments use multiple pseudorandom number generators.
-            We want to capture all such seeds used in order to ensure that
-            there aren't accidental correlations between multiple generators.
-
-        Returns:
-            list<bigint>: Returns the list of seeds used in this env's random
-              number generators. The first value in the list should be the
-              "main" seed, or the value which a reproducer should pass to
-              'seed'. Often, the main seed equals the provided 'seed', but
-              this won't be true if seed=None, for example.
-        """
-        self.np_random, seed = seeding.np_random(seed)
-        return [seed]
 
     def close(self) -> None:
         """Override close in your subclass to perform any necessary cleanup.

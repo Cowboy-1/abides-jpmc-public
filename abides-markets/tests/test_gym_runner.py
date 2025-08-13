@@ -1,4 +1,4 @@
-import gym
+import gymnasium as gym
 from tqdm import tqdm
 
 # Import to register environments
@@ -12,14 +12,12 @@ def test_gym_runner_markets_execution():
         background_config="rmsc04",
     )
 
-    env.seed(0)
-    state = env.reset()
+    state, info = env.reset(seed=0)
     for i in range(5):
         state, reward, done, info = env.step(0)
     env.step(1)
     env.step(2)
-    env.seed()
-    env.reset()
+    state, info = env.reset()
     env.close()
 
 
@@ -30,12 +28,10 @@ def test_gym_runner_markets_daily_investor():
         background_config="rmsc04",
     )
 
-    env.seed(0)
-    state = env.reset()
+    state, info = env.reset(seed=0)
     for i in range(5):
         state, reward, done, info = env.step(0)
     env.step(1)
     env.step(2)
-    env.seed()
-    env.reset()
+    state, info = env.reset()
     env.close()
