@@ -4,4 +4,6 @@ cd abides-core
 python setup.py develop
 cd ../abides-markets
 python setup.py develop
+cd ../abides-gym
+python setup.py develop
 cd ..

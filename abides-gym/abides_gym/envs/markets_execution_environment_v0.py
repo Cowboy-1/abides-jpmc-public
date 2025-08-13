@@ -108,6 +108,7 @@ class SubGymMarketsExecutionEnv_v0(AbidesGymMarketsEnv):
         *,
         flatten_history: bool = True,
     ) -> None:
+        self.flatten_history = flatten_history
         self.background_config: Any = importlib.import_module(
             "abides_markets.configs.{}".format(background_config), package=None
         )
