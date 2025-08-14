@@ -3,7 +3,7 @@ gymnasium>=0.29.1
 torch>=2.1
 numpy>=1.23,<2.0
 pandas>=1.5,<3.0
-scipy==1.13.1
+scipy==1.16.1
 psutil==5.8.0
 tqdm==4.61.1
 coloredlogs==15.0.1
