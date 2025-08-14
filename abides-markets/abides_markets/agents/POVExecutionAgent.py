@@ -34,7 +34,7 @@ class POVExecutionAgent(TradingAgent):
     def processEndTime(self):
         """ Make end time of POV order sensible, i.e. if a time is given leave it alone; else, add 24 hours to start."""
         if self.end_time is None:
-            self.end_time = self.start_time + pd.to_timedelta('24 hours')
+            self.end_time = self.start_time + pd.to_timedelta('24 hours').value
 
     def wakeup(self, currentTime):
         can_trade = super().wakeup(currentTime)
@@ -47,7 +47,7 @@ class POVExecutionAgent(TradingAgent):
             self.state = 'AWAITING_TRANSACTED_VOLUME'
 
     def getWakeFrequency(self):
-        return pd.Timedelta(self.freq)
+        return pd.Timedelta(self.freq).value  # Converts to int nanoseconds
 
     def receiveMessage(self, currentTime, msg):
         super().receiveMessage(currentTime, msg)
