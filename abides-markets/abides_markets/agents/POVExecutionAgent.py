@@ -38,7 +38,7 @@ class POVExecutionAgent(TradingAgent):
 
     def wakeup(self, currentTime):
         can_trade = super().wakeup(currentTime)
-        self.setWakeup(currentTime + self.getWakeFrequency())
+        self.set_wakeup(currentTime + self.get_wake_frequency())
         if not can_trade: return
         if self.trade and self.rem_quantity > 0 and self.start_time < currentTime < self.end_time:
             self.cancelOrders()
