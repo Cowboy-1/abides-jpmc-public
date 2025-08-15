@@ -94,8 +94,10 @@ def str_to_ns(string: str) -> NanosecondTime:
         - "1min" -> 6e10 ns
         - "00:00:30" -> 3e10 ns
     """
+    # Pandas deprecates uppercase 'S'; normalize for safety.
+    if isinstance(string, str):
+        string = string.replace('S', 's')
     return pd.to_timedelta(string).to_timedelta64().astype(int)
-
 
 def datetime_str_to_ns(string: str) -> NanosecondTime:
     """
