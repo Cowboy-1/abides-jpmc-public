@@ -48,7 +48,7 @@ class POVExecutionAgent(TradingAgent):
             self.get_transacted_volume(self.symbol, lookback_period=self.look_back_period)
             self.state = 'AWAITING_TRANSACTED_VOLUME'
 
-        # Canonical snake_case API (matches the rest of the codebase)
+    # Canonical snake_case API (matches the rest of the codebase)
     def get_wake_frequency(self):
         return pd.Timedelta(self.freq).value
 
