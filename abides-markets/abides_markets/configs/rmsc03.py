@@ -6,6 +6,7 @@
 # - 5000  Noise Agents
 
 import numpy as np
+import sys
 
 from abides_core.utils import str_to_ns, datetime_str_to_ns, get_wake_time
 from abides_markets.agents import (
