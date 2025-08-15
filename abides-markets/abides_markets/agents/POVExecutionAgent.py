@@ -38,8 +38,10 @@ class POVExecutionAgent(TradingAgent):
 
     def wakeup(self, currentTime):
         can_trade = super().wakeup(currentTime)
+        # Now safe: this calls the new alias, which delegates to getWakeFrequency()
         self.set_wakeup(currentTime + self.get_wake_frequency())
-        if not can_trade: return
+        if not can_trade:
+            return
         if self.trade and self.rem_quantity > 0 and self.start_time < currentTime < self.end_time:
             self.cancelOrders()
             self.getCurrentSpread(self.symbol, depth=sys.maxsize)
@@ -48,6 +50,10 @@ class POVExecutionAgent(TradingAgent):
 
     def getWakeFrequency(self):
         return pd.Timedelta(self.freq).value  # Converts to int nanoseconds
+
+    def get_wake_frequency(self):
+        """Alias for getWakeFrequency (camelCase) to match newer naming conventions."""
+        return self.getWakeFrequency()
 
     def receiveMessage(self, currentTime, msg):
         super().receiveMessage(currentTime, msg)
