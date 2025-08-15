@@ -122,7 +122,7 @@ def build_config(
                 log_orders=exchange_log_orders,
                 pipeline_delay=0,
                 computation_delay=0,
-                stream_history=25_000,
+                stream_history=sys.maxsize,
             )
         ]
     )
