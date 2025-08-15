@@ -9,6 +9,7 @@ from .trading_agent import TradingAgent
 from .value_agent import ValueAgent
 from .POVExecutionAgent import POVExecutionAgent
 
+
 __all__ = [
     "MomentumAgent",
     "AdaptiveMarketMakerAgent",
