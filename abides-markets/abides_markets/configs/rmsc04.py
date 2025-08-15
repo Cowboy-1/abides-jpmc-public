@@ -154,7 +154,7 @@ def build_config(
                 log_orders=exchange_log_orders,
                 pipeline_delay=0,
                 computation_delay=0,
-                stream_history=stream_history_length,
+                stream_history=sys.maxsize,
                 random_state=np.random.RandomState(
                     seed=np.random.randint(low=0, high=2**32, dtype="uint64")
                 ),
