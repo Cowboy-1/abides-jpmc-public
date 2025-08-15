@@ -49,15 +49,15 @@ class POVExecutionAgent(TradingAgent):
             self.state = 'AWAITING_TRANSACTED_VOLUME'
 
         # Canonical snake_case API (matches the rest of the codebase)
-     def get_wake_frequency(self):
-         return pd.Timedelta(self.freq).value
+    def get_wake_frequency(self):
+        return pd.Timedelta(self.freq).value
 
-     # Optional: short-lived alias with a deprecation warning; remove once callers are clean.
-     def getWakeFrequency(self):  # pragma: no cover
-         import warnings
-         warnings.warn("getWakeFrequency() is deprecated; use get_wake_frequency().",
-                       DeprecationWarning, stacklevel=2)
-         return self.get_wake_frequency()
+    # Optional: short-lived alias with a deprecation warning; remove once callers are clean.
+    def getWakeFrequency(self):  # pragma: no cover
+        import warnings
+        warnings.warn("getWakeFrequency() is deprecated; use get_wake_frequency().",
+                DeprecationWarning, stacklevel=2)
+        return self.get_wake_frequency()
 
     def receiveMessage(self, currentTime, msg):
         super().receiveMessage(currentTime, msg)
