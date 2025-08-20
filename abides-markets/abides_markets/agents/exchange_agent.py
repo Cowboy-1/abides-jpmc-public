@@ -204,92 +204,111 @@ class ExchangeAgent(FinancialAgent):
 				self.send_message(agent, message)
 
 	def receive_message(
-		self, current_time: NanosecondTime, sender_id: int, message: Message
+	    self, current_time: NanosecondTime, sender_id: int, message: Message
 	) -> None:
-		super().receive_message(current_time, sender_id, message)
-		self.set_computation_delay(self.computation_delay)
-		if current_time > self.mkt_close:
-			if isinstance(message, OrderMsg):
-				if isinstance(message, ModifyOrderMsg):
-					logger.debug(
-						"{} received {}: OLD: {} NEW: {}".format(
-							self.name,
-							message.type(),
-							message.old_order,
-							message.new_order,
-						)
-					)
-				else:
-					logger.debug(
-						"{} received {}: {}".format(
-							self.name, message.type(), message.order
-						)
-					)
-				self.send_message(sender_id, MarketClosedMsg())
-				return
-			elif isinstance(message, QueryMsg):
-				pass
-			else:
-				logger.debug(
-					"{} received {}, discarded: market is closed.".format(
-						self.name, message.type()
-					)
-				)
-				self.send_message(sender_id, MarketClosedMsg())
-				return
-
-		if isinstance(message, OrderMsg):
-			if self.log_orders:
-				if isinstance(message, (ModifyOrderMsg, ReplaceOrderMsg)):
-					self.logEvent(
-						message.type(),
-						message.new_order.to_dict(),
-						deepcopy_event=False,
-					)
-				else:
-					self.logEvent(
-						message.type(), message.order.to_dict(), deepcopy_event=False
-					)
-		else:
-			self.logEvent(message.type(), message)
-
-		if isinstance(message, MarketDataSubReqMsg):
-			if message.symbol not in self.order_books:
-				logger.warning(f"Subscription request discarded. Unknown symbol: {message.symbol}")
-				return
-			if message.cancel:
-				logger.debug(
-					"{} received MarketDataSubscriptionCancellation request from agent {}".format(
-						self.name, sender_id
-					)
-				)
-				for data_sub in self.data_subscriptions[message.symbol][:]:
-					if (
-						data_sub.agent_id == sender_id
-						and data_sub.freq == message.freq
-						and data_sub.depth == message.depth
-						and data_sub.__class__ == message.__class__
-					):
-						self.data_subscriptions[message.symbol].remove(data_sub)
-			else:
-				logger.debug(
-					"{} received MarketDataSubscriptionRequest from agent {}".format(
-						self.name, sender_id
-					)
-				)
-				if isinstance(message, L1SubReqMsg):
-					sub = self.L1DataSubscription(sender_id, current_time, message.freq)
-				elif isinstance(message, L2SubReqMsg):
-					sub = self.L2DataSubscription(sender_id, current_time, message.freq, message.depth)
-				elif isinstance(message, L3SubReqMsg):
-					sub = self.L3DataSubscription(sender_id, current_time, message.freq, message.depth)
-				elif isinstance(message, TransactedVolSubReqMsg):
-					sub = self.TransactedVolDataSubscription(sender_id, current_time, message.freq, message.lookback)
-				elif isinstance(message, BookImbalanceSubReqMsg):
-					sub = self.BookImbalanceDataSubscription(sender_id, current_time, False, message.min_imbalance)
-				else:
-					raise Exception("Invalid subscription type")
-				self.data_subscriptions[message.symbol].append(sub)
+	    super().receive_message(current_time, sender_id, message)
+	    self.set_computation_delay(self.computation_delay)
+	    if current_time > self.mkt_close:
+	        if isinstance(message, OrderMsg):
+	            if isinstance(message, ModifyOrderMsg):
+	                logger.debug(
+	                    "{} received {}: OLD: {} NEW: {}".format(
+	                        self.name,
+	                        message.type(),
+	                        message.old_order,
+	                        message.new_order,
+	                    )
+	                )
+	            else:
+	                logger.debug(
+	                    "{} received {}: {}".format(
+	                        self.name, message.type(), message.order
+	                    )
+	                )
+	            self.send_message(sender_id, MarketClosedMsg())
+	            return
+	        elif isinstance(message, QueryMsg):
+	            pass
+	        else:
+	            logger.debug(
+	                "{} received {}, discarded: market is closed.".format(
+	                    self.name, message.type()
+	                )
+	            )
+	            self.send_message(sender_id, MarketClosedMsg())
+	            return
+	
+	    if isinstance(message, OrderMsg):
+	        if self.log_orders:
+	            if isinstance(message, (ModifyOrderMsg, ReplaceOrderMsg)):
+	                self.logEvent(
+	                    message.type(),
+	                    message.new_order.to_dict(),
+	                    deepcopy_event=False,
+	                )
+	            else:
+	                self.logEvent(
+	                    message.type(), message.order.to_dict(), deepcopy_event=False
+	                )
+	    else:
+	        self.logEvent(message.type(), message)
+	
+	    if isinstance(message, MarketDataSubReqMsg):
+	        if message.symbol not in self.order_books:
+	            logger.warning(f"Subscription request discarded. Unknown symbol: {message.symbol}")
+	            return
+	        if message.cancel:
+	            logger.debug(
+	                "{} received MarketDataSubscriptionCancellation request from agent {}".format(
+	                    self.name, sender_id
+	                )
+	            )
+	            for data_sub in self.data_subscriptions[message.symbol][:]:
+	                if (
+	                    data_sub.agent_id == sender_id
+	                    and data_sub.__class__ == message.__class__
+	                    and (
+	                        isinstance(data_sub, self.FrequencyBasedSubscription)
+	                        and data_sub.freq == message.freq
+	                        or isinstance(data_sub, self.BookImbalanceDataSubscription)
+	                        and data_sub.min_imbalance == message.min_imbalance
+	                    )
+	                ):
+	                    self.data_subscriptions[message.symbol].remove(data_sub)
+	        else:
+	            logger.debug(
+	                "{} received MarketDataSubscriptionRequest from agent {}".format(
+	                    self.name, sender_id
+	                )
+	            )
+	            if isinstance(message, L1SubReqMsg):
+	                sub = self.L1DataSubscription(sender_id, current_time, message.freq)
+	                logger.debug(
+	                    f"Registered L1 subscription: agent={sender_id}, symbol={message.symbol}, freq={message.freq}"
+	                )
+	            elif isinstance(message, L2SubReqMsg):
+	                sub = self.L2DataSubscription(sender_id, current_time, message.freq, message.depth)
+	                logger.debug(
+	                    f"Registered L2 subscription: agent={sender_id}, symbol={message.symbol}, freq={message.freq}, depth={message.depth}"
+	                )
+	            elif isinstance(message, L3SubReqMsg):
+	                sub = self.L3DataSubscription(sender_id, current_time, message.freq, message.depth)
+	                logger.debug(
+	                    f"Registered L3 subscription: agent={sender_id}, symbol={message.symbol}, freq={message.freq}, depth={message.depth}"
+	                )
+	            elif isinstance(message, TransactedVolSubReqMsg):
+	                sub = self.TransactedVolDataSubscription(sender_id, current_time, message.freq, message.lookback)
+	                logger.debug(
+	                    f"Registered TransactedVol subscription: agent={sender_id}, symbol={message.symbol}, freq={message.freq}, lookback={message.lookback}"
+	                )
+	            elif isinstance(message, BookImbalanceSubReqMsg):
+	                sub = self.BookImbalanceDataSubscription(sender_id, current_time, False, message.min_imbalance)
+	                logger.debug(
+	                    f"Registered BookImbalance subscription: agent={sender_id}, symbol={message.symbol}, min_imbalance={message.min_imbalance}"
+	                )
+	            else:
+	                raise Exception("Invalid subscription type")
+	            self.data_subscriptions[message.symbol].append(sub)
 				# Log subscription details for debugging
 				logger.debug(f"Registered subscription for agent {sender_id}, symbol {message.symbol}, freq {message.freq}, depth {message.depth}")
 
