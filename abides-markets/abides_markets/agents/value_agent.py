@@ -219,7 +219,7 @@ class ValueAgent(TradingAgent):
         self.prev_wake_time = self.current_time
 
         logger.debug(
-            "{} estimates r_T = {} as of {}", self.name, r_T, self.current_time
+            "%s estimates r_T = %s as of %s",, self.name, r_T, self.current_time
         )
 
         return r_T
