@@ -255,12 +255,13 @@ class OrderBook:
 		bid_data = self.get_l1_bid_data()
 		ask_data = self.get_l1_ask_data()
 		logger.debug(
-			f"LOB after entering order: symbol={self.symbol}, "
-			f"best_bid={bid_data[0] if bid_data else None}, "
-			f"best_ask={ask_data[0] if ask_data else None}, "
-			f"bid_size={bid_data[1] if bid_data else None}, "
-			f"ask_size={ask_data[1] if ask_data else None}"
-		)
+			"LOB after entering order: symbol=%s, best_bid=%s, best_ask=%s, bid_size=%s, ask_size=%s",
+         	self.symbol,
+         	bid_data[0] if bid_data else None,
+         	ask_data[0] if ask_data else None,
+         	bid_data[1] if bid_data else None,
+         	ask_data[1] if ask_data else None,
+     )
 
 	def cancel_order(
 		self,
