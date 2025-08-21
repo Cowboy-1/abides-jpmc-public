@@ -8,6 +8,7 @@ from .noise_agent import NoiseAgent
 from .trading_agent import TradingAgent
 from .value_agent import ValueAgent
 from .POVExecutionAgent import POVExecutionAgent
+from .market_replay_agent import MarketReplayAgent
 
 
 __all__ = [
