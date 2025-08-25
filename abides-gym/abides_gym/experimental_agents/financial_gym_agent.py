@@ -129,9 +129,9 @@ class FinancialGymAgent(CoreBackgroundAgent, CoreGymAgent):
         return raw_state
 
     def request_data_subscription(self, subscribe_freq: int = 1_000_000_000, subscribe_num_levels: int = 10):
-    logger.debug(f"Requesting subscription: freq={subscribe_freq}, depth={subscribe_num_levels}, symbol={self.symbol}")
-    self.send_message(
-        self.exchange_id,
-        L1SubReqMsg(symbol=self.symbol, freq=subscribe_freq, depth=subscribe_num_levels)
-    )
-    self.has_subscribed = True
+        logger.debug(f"Requesting subscription: freq={subscribe_freq}, depth={subscribe_num_levels}, symbol={self.symbol}")
+        self.send_message(
+            self.exchange_id,
+            L1SubReqMsg(symbol=self.symbol, freq=subscribe_freq, depth=subscribe_num_levels)
+        )
+        self.has_subscribed = True
