@@ -155,7 +155,10 @@ class ExchangeAgent(FinancialAgent):
 	def kernel_initializing(self, kernel: "Kernel") -> None:
 		super().kernel_initializing(kernel)
 		assert self.kernel is not None
-		self.oracle = self.kernel.oracle
+		if hasattr(self.kernel, 'oracle'):
+			self.oracle = self.kernel.oracle
+		else:
+			self.oracle = None
 		for symbol in self.order_books:
 			try:
 				self.order_books[symbol].last_trade = self.oracle.get_daily_open_price(

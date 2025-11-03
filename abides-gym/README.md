@@ -74,7 +74,7 @@ h/t:
 
 32 in total:
    - 5 in experimental agent folder
-   - 24 in gim-abides folder 
+   - 24 in gym-abides folder 
    - 3 in runner folder
    
 ## experimental agent

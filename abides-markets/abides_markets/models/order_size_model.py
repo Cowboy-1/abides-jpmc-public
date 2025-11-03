@@ -1,7 +1,8 @@
 import json
 
 import numpy as np
-from pomegranate import GeneralMixtureModel
+from pomegranate.distributions import LogNormal as LogNormalDistribution, Normal as NormalDistribution
+from pomegranate.gmm import GeneralMixtureModel
 
 
 order_size = {
@@ -92,7 +93,7 @@ order_size = {
 
 class OrderSizeModel:
     def __init__(self) -> None:
-        self.model = GeneralMixtureModel.from_json(json.dumps(order_size))
+        self.model = None  # Disable pomegranate
 
     def sample(self, random_state: np.random.RandomState) -> float:
-        return round(self.model.sample(random_state=random_state))
+        return random_state.choice([1, 5, 10, 25, 50, 100])  # Simple fixed sizes

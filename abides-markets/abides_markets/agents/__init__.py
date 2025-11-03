@@ -20,4 +20,5 @@ __all__ = [
     "TradingAgent",
     "ValueAgent",
     "POVExecutionAgent",
+    "MeanReversionAgent",
 ]
